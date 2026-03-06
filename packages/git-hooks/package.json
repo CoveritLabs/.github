@@ -1,0 +1,27 @@
+{
+    "name": "@coveritlabs/git-hooks",
+    "version": "1.0.0",
+    "description": "Shared Git hook scripts for CoveritLabs repositories",
+    "type": "module",
+    "bin": {
+        "coverit-validate-branch": "./scripts/validate-branch.sh",
+        "coverit-validate-commit-msg": "./scripts/validate-commit-msg.sh",
+        "coverit-add-license-header": "./scripts/add-license-header.mjs"
+    },
+    "files": [
+        "scripts/"
+    ],
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/CoveritLabs/.github.git",
+        "directory": "packages/git-hooks"
+    },
+    "dependencies": {
+        "@commitlint/cli": "^20.4.3",
+        "@commitlint/config-conventional": "^20.4.3",
+        "@commitlint/cz-commitlint": "^20.4.3",
+        "commitizen": "^4.3.1"
+    },
+    "license": "UNLICENSED",
+    "private": true
+}
