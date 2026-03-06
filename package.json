@@ -4,8 +4,8 @@
     "description": "Shared Git hook scripts for CoveritLabs repositories",
     "type": "module",
     "bin": {
-        "coverit-validate-branch": "./packages/git-hooks/scripts/validate-branch.sh",
-        "coverit-validate-commit-msg": "./packages/git-hooks/scripts/validate-commit-msg.sh",
+        "coverit-validate-branch": "./packages/git-hooks/scripts/validate-branch.mjs",
+        "coverit-validate-commit-msg": "./packages/git-hooks/scripts/validate-commit-msg.mjs",
         "coverit-add-license-header": "./packages/git-hooks/scripts/add-license-header.mjs"
     },
     "files": [
