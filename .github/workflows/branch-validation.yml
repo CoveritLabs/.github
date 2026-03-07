@@ -13,7 +13,13 @@ jobs:
           BRANCH="${GITHUB_HEAD_REF}"
           BASE="${GITHUB_BASE_REF}"
 
-          # 1. Validate source branch name
+          # 1. Skip validation for bot-created PRs
+          if [[ "$GITHUB_ACTOR" == *\[bot\]* ]]; then
+            echo "PR author '$GITHUB_ACTOR' is a bot — skipping branch validation."
+            exit 0
+          fi
+
+          # 2. Validate source branch name
 
           # Long-lived branches are allowed as source (e.g. back-merges).
           if [[ "$BRANCH" == "main" || "$BRANCH" == "develop" ]]; then
@@ -29,7 +35,7 @@ jobs:
             exit 1
           fi
 
-          # 2. Validate target branch matches the documented merge rules
+          # 3. Validate target branch matches the documented merge rules
 
           PREFIX="${BRANCH%%/*}"
 
