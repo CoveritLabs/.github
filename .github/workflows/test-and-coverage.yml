@@ -1,0 +1,162 @@
+name: Test and coverage
+
+on:
+  workflow_call:
+    inputs:
+      node-version:
+        description: "Node.js version"
+        required: false
+        type: string
+        default: "22"
+      working-directory:
+        description: "Directory containing package.json"
+        required: false
+        type: string
+        default: "."
+
+jobs:
+  test:
+    name: Tests & coverage
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+      pull-requests: write
+
+    defaults:
+      run:
+        working-directory: ${{ inputs.working-directory }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ inputs.node-version }}
+          cache: npm
+          cache-dependency-path: ${{ inputs.working-directory }}/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run tests with coverage
+        id: tests
+        run: |
+          set +e
+          npx jest --forceExit --detectOpenHandles \
+            --coverage --coverageReporters json-summary \
+            --json --outputFile=test-results.json
+          echo "exit-code=$?" >> "$GITHUB_OUTPUT"
+
+      - name: Report results
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const path = require('path');
+
+            const wd = '${{ inputs.working-directory }}';
+            const exitCode = parseInt('${{ steps.tests.outputs.exit-code }}') || 1;
+
+            let tests = {
+              total: 0, passed: 0, failed: 0, skipped: 0,
+              suites: 0, suitesPassed: 0, suitesFailed: 0,
+            };
+            try {
+              const raw = fs.readFileSync(path.join(wd, 'test-results.json'), 'utf8');
+              const data = JSON.parse(raw);
+              tests = {
+                total: data.numTotalTests,
+                passed: data.numPassedTests,
+                failed: data.numFailedTests,
+                skipped: data.numPendingTests,
+                suites: data.numTotalTestSuites,
+                suitesPassed: data.numPassedTestSuites,
+                suitesFailed: data.numFailedTestSuites,
+              };
+            } catch (e) {
+              core.warning('Could not parse test-results.json: ' + e.message);
+            }
+
+            let coverage = null;
+            try {
+              const raw = fs.readFileSync(
+                path.join(wd, 'coverage', 'coverage-summary.json'), 'utf8',
+              );
+              coverage = JSON.parse(raw);
+            } catch {
+              core.info('No coverage data found');
+            }
+
+            const ok = exitCode === 0;
+            const icon = ok ? '✅' : '❌';
+            const status = ok ? '✅ Passed' : '❌ Failed';
+
+            function badge(pct) {
+              if (pct >= 80) return '🟢';
+              if (pct >= 60) return '🟡';
+              return '🔴';
+            }
+
+            let body = `## 🧪 Test & Coverage Report\n\n`;
+            body += `| Metric | Result |\n|--------|--------|\n`;
+            body += `| **Status** | ${status} |\n`;
+            body += `| **Tests** | ${icon} ${tests.passed} passed`;
+            if (tests.failed > 0) body += `, ${tests.failed} failed`;
+            if (tests.skipped > 0) body += `, ${tests.skipped} skipped`;
+            body += ` / ${tests.total} total |\n`;
+            body += `| **Suites** | ${tests.suitesPassed} passed`;
+            if (tests.suitesFailed > 0) body += `, ${tests.suitesFailed} failed`;
+            body += ` / ${tests.suites} total |\n\n`;
+
+            if (coverage) {
+              const { statements, branches, functions, lines } = coverage.total;
+              body += `### Coverage\n\n`;
+              body += `| Category | Coverage | Covered / Total |\n`;
+              body += `|----------|----------|----------------|\n`;
+              body += `| ${badge(statements.pct)} Statements | **${statements.pct}%** | ${statements.covered} / ${statements.total} |\n`;
+              body += `| ${badge(branches.pct)} Branches | **${branches.pct}%** | ${branches.covered} / ${branches.total} |\n`;
+              body += `| ${badge(functions.pct)} Functions | **${functions.pct}%** | ${functions.covered} / ${functions.total} |\n`;
+              body += `| ${badge(lines.pct)} Lines | **${lines.pct}%** | ${lines.covered} / ${lines.total} |\n`;
+            }
+
+            body += `\n> Updated for commit \`${context.sha.substring(0, 7)}\``;
+
+            await core.summary.addRaw(body).write();
+
+            const prNumber = context.payload.pull_request?.number;
+            if (prNumber) {
+              const marker = '<!-- coverit-test-coverage -->';
+              const commentBody = marker + '\n' + body;
+
+              const { data: comments } = await github.rest.issues.listComments({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: prNumber,
+                per_page: 100,
+              });
+
+              const existing = comments.find(c => c.body?.includes(marker));
+
+              if (existing) {
+                await github.rest.issues.updateComment({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  comment_id: existing.id,
+                  body: commentBody,
+                });
+              } else {
+                await github.rest.issues.createComment({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  issue_number: prNumber,
+                  body: commentBody,
+                });
+              }
+            }
+
+      - name: Fail if tests failed
+        if: steps.tests.outputs.exit-code != '0'
+        run: exit 1
