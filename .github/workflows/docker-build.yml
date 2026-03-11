@@ -17,6 +17,11 @@ on:
         required: false
         type: string
         default: "."
+      build-args:
+        description: "Newline-separated list of build-time variables (ARG=value)"
+        required: false
+        type: string
+        default: ""
 
 jobs:
   build-and-push:
@@ -65,6 +70,7 @@ jobs:
           push: ${{ github.event_name != 'pull_request' }}
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
+          build-args: ${{ inputs.build-args }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
           secrets: |
