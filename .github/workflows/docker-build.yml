@@ -67,11 +67,12 @@ jobs:
             type=semver,pattern={{major}}.{{minor}}
 
       - name: Generate .env file from Secret
-        if: ${{ secrets.ENV_FILE_CONTENTS != '' }}
+        env:
+          ENV_CONTENTS: ${{ secrets.ENV_FILE_CONTENTS }}
         run: |
-          cat << 'EOF' > ${{ inputs.context }}/.env
-          ${{ secrets.ENV_FILE_CONTENTS }}
-          EOF
+          if [ -n "$ENV_CONTENTS" ]; then
+            echo "$ENV_CONTENTS" > ${{ inputs.context }}/.env
+          fi
 
       - name: Build and push
         uses: docker/build-push-action@v6
