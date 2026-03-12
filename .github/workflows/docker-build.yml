@@ -22,6 +22,10 @@ on:
         required: false
         type: string
         default: ""
+    secrets:
+      ENV_FILE_CONTENTS:
+        description: "The entire contents of the .env file"
+        required: false
 
 jobs:
   build-and-push:
@@ -61,6 +65,13 @@ jobs:
             type=semver,pattern={{version}}
             # :1.2 on semver tags
             type=semver,pattern={{major}}.{{minor}}
+
+      - name: Generate .env file from Secret
+        if: ${{ secrets.ENV_FILE_CONTENTS != '' }}
+        run: |
+          cat << 'EOF' > ${{ inputs.context }}/.env
+          ${{ secrets.ENV_FILE_CONTENTS }}
+          EOF
 
       - name: Build and push
         uses: docker/build-push-action@v6
