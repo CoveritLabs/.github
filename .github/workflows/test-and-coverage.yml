@@ -63,7 +63,8 @@ jobs:
             const path = require('path');
 
             const wd = '${{ inputs.working-directory }}';
-            const exitCode = parseInt('${{ steps.tests.outputs.exit-code }}') || 1;
+            const parsed = Number('${{ steps.tests.outputs.exit-code }}');
+            const exitCode = Number.isNaN(parsed) ? 1 : parsed;
 
             let tests = {
               total: 0, passed: 0, failed: 0, skipped: 0,
