@@ -15,12 +15,14 @@
         "type": "git",
         "url": "https://github.com/CoveritLabs/.github.git"
     },
+    "publishConfig": {
+        "registry": "https://npm.pkg.github.com"
+    },
     "dependencies": {
         "@commitlint/cli": "^20.4.3",
         "@commitlint/config-conventional": "^20.4.3",
         "@commitlint/cz-commitlint": "^20.4.3",
         "commitizen": "^4.3.1"
     },
-    "license": "UNLICENSED",
-    "private": true
+    "license": "UNLICENSED"
 }
