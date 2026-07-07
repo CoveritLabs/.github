@@ -56,7 +56,8 @@ The current public demo shows the CoverIt platform in action, including the main
 product screens and the workflow around crawl sessions, generated flows, and
 regression support.
 
-![demo](https://github.com/CoveritLabs/.github/blob/main/assets/clips/demo.mp4)
+<video src="https://github.com/CoveritLabs/.github/raw/main/assets/clips/demo.mp4" width="100%" controls>
+</video>
 
 ## Tech stack
 
