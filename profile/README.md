@@ -6,6 +6,10 @@
   A QA automation platform for web applications, built to explore, understand, and test user flows automatically to enable faster regression coverage, better documentation, and more reliable QA.
 </p>
 
+
+https://github.com/user-attachments/assets/16d80a1d-1849-4cb7-82b9-781b236d7c0e
+
+
 ## What CoverIt does
 
 CoverIt helps a QA engineer move from application exploration to regression
