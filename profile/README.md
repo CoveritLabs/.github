@@ -1,14 +1,10 @@
-# CoverIt
+<p align="center">
+  <img src="../assets/images/logo.png" width="230" alt="CoverIt Logo" style="border-radius: 10px;"/>
+</p>
 
-CoverIt is a QA automation platform for web applications. It was built as a
-graduation project at the Faculty of Engineering, Cairo University.
-
-The project started from a practical problem: manual web testing is slow, and
-many automated tools still depend heavily on raw DOM structure. That makes them
-fragile when the UI changes and limited when the goal is to understand actual user
-flows. CoverIt approaches the problem by crawling the application semantically,
-storing the discovered behavior as a state graph, and using that graph to produce
-test flows, regression code, user guides, and demo videos.
+<p align="center">
+  A QA automation platform for web applications, built to explore, understand, and test user flows automatically to enable faster regression coverage, better documentation, and more reliable QA.
+</p>
 
 ## What CoverIt does
 
@@ -22,10 +18,9 @@ coverage with less manual work:
 5. Review flows, edit steps, and add assertions.
 6. Generate executable regression code and open a pull request.
 7. Monitor regression runs, failures, reports, and generated documentation.
+8. Integrate with CI/CD pipelines to run regression tests automatically on every change.
+9. Report bugs in manual flows or regression runs, and automatically generate a bug report with a video of the failure.
 
-The system is built around one idea: a single crawl should be useful in more than
-one way. The same captured behavior supports regression tests, BDD scenarios,
-user guides, issue reports, and walkthrough videos.
 
 ## Main modules
 
@@ -49,14 +44,6 @@ contracts, and generated test code.
 ![architecture](../assets/images/architecture.png)
 
 See [architecture.md](../docs/architecture.md) for the full data flow.
-
-## Demo video
-
-The current public demo shows the CoverIt platform in action, including the main
-product screens and the workflow around crawl sessions, generated flows, and
-regression support.
-
-[![Watch the Demo](../assets/images/thumbnail.png)](https://github.com/CoveritLabs/.github/raw/main/assets/clips/demo.mp4)
 
 ## Tech stack
 
