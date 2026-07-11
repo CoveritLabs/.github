@@ -107,21 +107,6 @@ It includes:
 Its output is intended to be committed through a generated branch and reviewed in
 a pull request.
 
-## `coverit-regression-framework`
-
-The generated regression framework is the runtime used by produced tests. It is
-based on Playwright and TypeScript.
-
-It provides:
-
-- generated feature files and step mappings
-- state and transition execution
-- runtime assertions
-- locators self-healing support
-- filtered CI runs for added flows
-- Playwright reports and CoverIt artifacts
-- reporting hooks back into the CoverIt API
-
 ## `.github`
 
 The `.github` repository contains the public GitHub profile docs and shared
